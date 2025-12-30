@@ -1,0 +1,26 @@
+# Telegram Bot Framework
+aiogram==3.15.0
+
+# Database
+asyncpg==0.29.0
+SQLAlchemy==2.0.35
+alembic==1.13.3
+
+# Configuration
+python-dotenv==1.0.1
+PyYAML==6.0.2
+
+# Logging
+loguru==0.7.2
+
+# HTTP Client for OpenRouter API
+httpx==0.27.2
+
+# Web server for webhooks
+aiohttp==3.9.1
+
+# Payment systems
+robokassa
+
+# Additional utilities
+python-dateutil==2.9.0

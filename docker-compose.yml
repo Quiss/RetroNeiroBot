@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: holidaytoys_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: holidaytoys
+      POSTGRES_USER: holidaytoys_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - '127.0.0.1:5606:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U holidaytoys_user -d holidaytoys"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bot_network
+
+  migrations:
+    build:
+      context: .
+      dockerfile: migrations/Dockerfile
+    container_name: holidaytoys_migrations
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bot_network
+    command: ["sh", "-c", "sleep 3 && alembic upgrade head"]
+
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    container_name: holidaytoys_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - bot_network
+    volumes:
+      - ./logs:/app/logs
+
+networks:
+  bot_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
