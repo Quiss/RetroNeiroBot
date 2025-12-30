@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: holidaytoys_postgres
+    container_name: retroneiro_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: holidaytoys
-      POSTGRES_USER: holidaytoys_user
+      POSTGRES_DB: retroneiro
+      POSTGRES_USER: retroneiro_user
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
     ports:
       - '127.0.0.1:5606:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U holidaytoys_user -d holidaytoys"]
+      test: ["CMD-SHELL", "pg_isready -U retroneiro_user -d retroneiro"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: migrations/Dockerfile
-    container_name: holidaytoys_migrations
+    container_name: retroneiro_migrations
     env_file:
       - .env
     depends_on:
@@ -37,7 +37,7 @@ services:
     build:
       context: .
       dockerfile: bot/Dockerfile
-    container_name: holidaytoys_bot
+    container_name: retroneiro_bot
     restart: unless-stopped
     env_file:
       - .env
